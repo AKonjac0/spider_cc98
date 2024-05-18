@@ -7,9 +7,11 @@ import openpyxl.styles
 
 headers = {
     'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/119.0.0.0 Safari/537.36 Edg/119.0.0.0',
-    'Authorization':'Bearer eyJhbGciOiJSUzI1NiIsImtpZCI6IjAzQTg0MkUwMjlENkE2MzQzNUVFNzNDODk5MDI4MkNGMzk5Mzc4QjBSUzI1NiIsInR5cCI6ImF0K2p3dCIsIng1dCI6IkE2aEM0Q25XcGpRMTduUEltUUtDenptVGVMQSJ9.eyJuYmYiOjE3MDA5NTcwMjEsImV4cCI6MTcwMDk2MDYyMSwiaXNzIjoiaHR0cHM6Ly9vcGVuaWQuY2M5OC5vcmciLCJjbGllbnRfaWQiOiI5YTFmZDIwMC04Njg3LTQ0YjEtNGMyMC0wOGQ1MGE5NmU1Y2QiLCJzdWIiOiI3MzUzNzYiLCJhdXRoX3RpbWUiOjE3MDA0NDc5NDIsImlkcCI6ImxvY2FsIiwidW5pcXVlX25hbWUiOiJBS29uamFjXyIsIm5hbWUiOiJBS29uamFjXyIsImZvcnVtLnByaXZpbGVnZSI6NCwianRpIjoiNjQ5N0ZBMjg4Q0M4Mjc4NUU0NjIxRUFCM0VBRTgzMjYiLCJpYXQiOjE3MDA0NDc5NDIsInNjb3BlIjpbImNjOTgtYXBpIiwib3BlbmlkIiwib2ZmbGluZV9hY2Nlc3MiXSwiYW1yIjpbIkNDOTgiXX0.hIeHCbulSG3luRAV1sIUr6Y7GuMXGmCFZAYMJzfHt7K_RNff-l9Bqs2oMsJAEqXzHgoK18MGV-A9x4e9TZqRNF0SMpEH48vx0YNvDnB1Tzi3RvmHx54lU95iBl8yNaw6Lq33YD0rCL7IY1VrDmH7a1Pj46rnpjm-DPNU2VVf_C8Cqp3yFUurB1XbYbNJ7qBatX58LFxawFuNqnmgRj03SVXtebBFSInnaGuu7dcztOXIjAsZQdWAEU0kYM1UGO6EAiWXUdHn_noQwWTy0pcUiMsfqAJTUhV3iIKl1x-eJFuF4MuSw0bAggdjrx3OmGx-uVxK24FAJ2pLD3OSQCwvTQ'
+    'Authorization':'Bearer eyJhbGciOiJSUzI1NiIsImtpZCI6IkEyOTQ4RUY3Nzk3RkZFNkQ0OTcyOTQ0ODY5OTU3MkU5IiwidHlwIjoiYXQrand0In0.eyJuYmYiOjE3MTU1MDIzNTYsImV4cCI6MTcxNTUwNTk1NiwiaXNzIjoiaHR0cHM6Ly9vcGVuaWQuY2M5OC5vcmciLCJjbGllbnRfaWQiOiI5YTFmZDIwMC04Njg3LTQ0YjEtNGMyMC0wOGQ1MGE5NmU1Y2QiLCJzdWIiOiI3MzUzNzYiLCJhdXRoX3RpbWUiOjE3MTM1ODk4MzEsImlkcCI6ImxvY2FsIiwidW5pcXVlX25hbWUiOiJBS29uamFjXyIsIm5hbWUiOiJBS29uamFjXyIsImZvcnVtLnByaXZpbGVnZSI6NCwianRpIjoiMDFDODM4QzdDNzFGMTkzMTU3OEY1MzRFNjBBNEI3NzEiLCJpYXQiOjE3MTM1ODk4MzEsInNjb3BlIjpbImNjOTgtYXBpIiwib3BlbmlkIiwib2ZmbGluZV9hY2Nlc3MiXSwiYW1yIjpbIkNDOTgiXX0.E7TcnkC-FG2NWO1dULuQRhZyuSsk0EGTM8Q4uCbNE4KM0fggNXtmcN1HB0a_Kjfdr4i8yYofNuZUzWOKNQiagFNB253i1ixOdCDZdyCb6lWnocbotczwbZMyORt_YLox0K7wUD4AR67Y_U7rwQfP0Ceu7lPGHJM-jNbZL2yyxdE7m7y9wSPC5WMVP-7pCPTSOqUo9RXGONQNC9nS735BfBoEYefpoLV0YbfxFGA-EYbnAW_azbZcRYa3vKdi1ZIBWk4yQTwNzhKYkVsZeIGh7vCAXpGEyEhkpZWy78tZ3qnft9ZlVCWt0KBl3bp1r3mY6BtJxIGDHrm3LboEUKNDgw'
 }
-workbook_name = 'cc98_study_0.xlsx'
+workbook_name = 'cc98_study_2.xlsx'
+web_name = r'https://api.cc98.org'
+# web_name = r'http://www-cc98-org-s.webvpn.zju.edu.cn:8001/'
 
 
 def get_time(t0, t1, t2):
@@ -25,8 +27,9 @@ def get_time(t0, t1, t2):
     print("total time:" + str(h) + ":" + str(m) + ":" + str(s))
 
 
+
 def work(i, sheet):
-    Url = r'http://api-cc98-org-s.webvpn.zju.edu.cn:8001/topic/{}?sf_request_type=fetch'.format(i)
+    Url = web_name+r'/Topic/{}?sf_request_type=fetch'.format(i)
     resp = requests.get(Url, headers=headers)
     html = resp.text
     # print(html)
@@ -44,7 +47,7 @@ def work(i, sheet):
 
         tmp = []
         for j in range(0, cnt + 1):
-            url = r'http://api-cc98-org-s.webvpn.zju.edu.cn:8001/Topic/{}/post?from={}&size=10&sf_request_type=fetch'.format(
+            url = web_name+r'/Topic/{}/post?from={}&size=10&sf_request_type=fetch'.format(
                 i, j * 10)
             res = requests.get(url, headers=headers)
             htmls = res.text
@@ -79,14 +82,16 @@ def spider():
     workbook = openpyxl.Workbook()
     sheet = workbook.active
     sheet.title = 'cc98'
-    web_url = r'http://api-cc98-org-s.webvpn.zju.edu.cn:8001/board/68?sf_request_type=fetch'
+    board_num = 68
+    web_url = web_name+r'/board/{}?sf_request_type=fetch'.format(board_num)
     resp = requests.get(web_url, headers=headers)
     html = resp.text
     js_html = json.loads(html)
 
     num = int(js_html["topicCount"] / 20)
-    for n in range(1261, num + 1):
-        web_Url = r'http://api-cc98-org-s.webvpn.zju.edu.cn:8001/board/68/topic?from={}&size=20&sf_request_type=fetch'.format(n * 10)
+    tmp = int(15620/20)
+    for n in range(tmp + 1, num + 1):
+        web_Url = web_name+r'/board/{}/topic?from={}&size=20&sf_request_type=fetch'.format(board_num, n * 20)
         resp = requests.get(web_Url, headers=headers)
         html = resp.text
         js_html = json.loads(html)
@@ -103,6 +108,7 @@ def spider():
             workbook.save(workbook_name)
             get_time(t0, t1, time.time())
             t1 = time.time()
+            print(n)
 
     workbook.save(workbook_name)
 

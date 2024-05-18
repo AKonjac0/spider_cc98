@@ -1,22 +1,155 @@
 import requests
 import json
+import openpyxl
+import time
+import openpyxl.styles
+import os
+# http://openid-cc98-org-s.webvpn.zju.edu.cn:8001/connect/token?sf_request_type=fetch
 
-header = {
+headers = {
     'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/119.0.0.0 Safari/537.36 Edg/119.0.0.0',
-    'Authorization':'eyJhbGciOiJSUzI1NiIsImtpZCI6IjAzQTg0MkUwMjlENkE2MzQzNUVFNzNDODk5MDI4MkNGMzk5Mzc4QjBSUzI1NiIsInR5cCI6ImF0K2p3dCIsIng1dCI6IkE2aEM0Q25XcGpRMTduUEltUUtDenptVGVMQSJ9.eyJuYmYiOjE3MDA5MDMwODUsImV4cCI6MTcwMDkwNjY4NSwiaXNzIjoiaHR0cHM6Ly9vcGVuaWQuY2M5OC5vcmciLCJjbGllbnRfaWQiOiI5YTFmZDIwMC04Njg3LTQ0YjEtNGMyMC0wOGQ1MGE5NmU1Y2QiLCJzdWIiOiI3MzUzNzYiLCJhdXRoX3RpbWUiOjE3MDA0NDc5NDIsImlkcCI6ImxvY2FsIiwidW5pcXVlX25hbWUiOiJBS29uamFjXyIsIm5hbWUiOiJBS29uamFjXyIsImZvcnVtLnByaXZpbGVnZSI6NCwianRpIjoiNjQ5N0ZBMjg4Q0M4Mjc4NUU0NjIxRUFCM0VBRTgzMjYiLCJpYXQiOjE3MDA0NDc5NDIsInNjb3BlIjpbImNjOTgtYXBpIiwib3BlbmlkIiwib2ZmbGluZV9hY2Nlc3MiXSwiYW1yIjpbIkNDOTgiXX0.DghUNt3eFyuCTgkvfkqnJS4peQkKqP5UFJjMbukiJJma_-nQWvGxcVsThTkFNqtKV15HM-e33APpOSbDTkc_Qv6ZbtSY5qsjoXgji54WwaL7IoWrPLKORaR0uTIhgz7Yk2Jfj9ufGpxEIX9Kfbv2DNPqh8pqG6BjqKM_lt_1l1UGHVxpnr_ntF6R-uX9memD2Q3xvRH7mY5ZH8C4jYlfX7e0ouct_t515Eg3DtZpsuQZXz9T_ROCT0XSWcYohcUHGRaLlMU85v-xA9mkbCBMEwg1Qwv5x0RkJ_NAmbrkIR13gJODCup-n3aAahnuKFYjkPVlQzjyj5ObWmQG3vwq0g',
-    'Cookie':"lang=zh-CN; _pm0=6M52ijUpdeIm448kYxkLhibnZz0gNCSa6NPmgqci4WE%3D; _ga=GA1.3.302578037.1696553050; HMACCOUNT_-_hm.baidu.com=E2AED51B271A32FC; HMACCOUNT_BFESS_-_hm.baidu.com=E2AED51B271A32FC; Hm_lvt_8ac2f3a56ae6c3341b2d041c3c86e69d_-_chalaoshi.de=1697079088; cf_clearance_-_chalaoshi.de=_jakDtV9ESj.kTUYpoVGSU7zjvYCl5ARXf0U09JhYPY-1697079087-0-1-dc9a8254.f04ad9ea.8b9bddb4-0.2.1697079087; Hm_lvt_0ccdb69da7dc24fdfbd452186f767da6_-_nesa.zju.edu.cn=1697036630,1697100341; Hm_lvt_35da6f287722b1ee93d185de460f8ba2=1698235424; iPlanetDirectoryPro=fvcxrP30VEAgKDMwWUPyK4G%2BOCQRLziX9gfu0tlEvB9DRkm0YWfnOhA9Crni5hq7%2FBp1PghbZYNSve%2FANFh8VvR41iAOGLkszz8E2oNmntRYi1C5bJXna0mJV%2FmEAAZT9MWy%2F4FZRw%2BVo5ite%2FLS5tedUQlDKQx3SKER2t2aGVOAV57TZEHroq%2FNpXM2mnawbH%2FfYnG%2BskU3GskzDB%2BUoEMHlHnvSW4CpOYZWswGtSkCBXT8c%2BlsAyTZKGyKM9AtlRazEjjWFBWDJSmhRZ2fJdzixiFahElmQccL8PG1hcOTZxc%2FvLXuGyGwnG6Jh2xObKk30eXI1VTW7vs0pBAyxz5xLpGvCg58dlZVr1Gi3yfKkSy2MREVI6%2F7g9%2FrIbOk; TWFID=a7ba490106e5e8f8"
-
-
+    'Authorization':'Bearer eyJhbGciOiJSUzI1NiIsImtpZCI6IkEyOTQ4RUY3Nzk3RkZFNkQ0OTcyOTQ0ODY5OTU3MkU5IiwidHlwIjoiYXQrand0In0.eyJuYmYiOjE3MTU1MDIzNTYsImV4cCI6MTcxNTUwNTk1NiwiaXNzIjoiaHR0cHM6Ly9vcGVuaWQuY2M5OC5vcmciLCJjbGllbnRfaWQiOiI5YTFmZDIwMC04Njg3LTQ0YjEtNGMyMC0wOGQ1MGE5NmU1Y2QiLCJzdWIiOiI3MzUzNzYiLCJhdXRoX3RpbWUiOjE3MTM1ODk4MzEsImlkcCI6ImxvY2FsIiwidW5pcXVlX25hbWUiOiJBS29uamFjXyIsIm5hbWUiOiJBS29uamFjXyIsImZvcnVtLnByaXZpbGVnZSI6NCwianRpIjoiMDFDODM4QzdDNzFGMTkzMTU3OEY1MzRFNjBBNEI3NzEiLCJpYXQiOjE3MTM1ODk4MzEsInNjb3BlIjpbImNjOTgtYXBpIiwib3BlbmlkIiwib2ZmbGluZV9hY2Nlc3MiXSwiYW1yIjpbIkNDOTgiXX0.E7TcnkC-FG2NWO1dULuQRhZyuSsk0EGTM8Q4uCbNE4KM0fggNXtmcN1HB0a_Kjfdr4i8yYofNuZUzWOKNQiagFNB253i1ixOdCDZdyCb6lWnocbotczwbZMyORt_YLox0K7wUD4AR67Y_U7rwQfP0Ceu7lPGHJM-jNbZL2yyxdE7m7y9wSPC5WMVP-7pCPTSOqUo9RXGONQNC9nS735BfBoEYefpoLV0YbfxFGA-EYbnAW_azbZcRYa3vKdi1ZIBWk4yQTwNzhKYkVsZeIGh7vCAXpGEyEhkpZWy78tZ3qnft9ZlVCWt0KBl3bp1r3mY6BtJxIGDHrm3LboEUKNDgw'
 }
-body = json.dumps({"UserName": "AKonjac_", "Password": "AKonjac_050419"})
+tmp_path = './tmp.txt'  # workbook_num
+num_path = './num.txt'  # topic_num
+workbook_name = 'cc98_study_{}.xlsx'
+web_name = r'https://api.cc98.org'
+# web_name = r'http://www-cc98-org-s.webvpn.zju.edu.cn:8001/'
 
 
-        # token = jsonpath(res.json(), "$..access_token")[0]
+def get_time(t0, t1, t2):
+    t = t2 - t1
+    h = int(t / 3600)
+    m = int((t - h * 3600) / 60)
+    s = int((t - h * 3600 - m * 60))
+    print("section time:" + str(h) + ":" + str(m) + ":" + str(s))
+    t = t2 - t0
+    h = int(t / 3600)
+    m = int((t - h * 3600) / 60)
+    s = int((t - h * 3600 - m * 60))
+    print("total time:" + str(h) + ":" + str(m) + ":" + str(s))
 
-Url = r'http://api-cc98-org-s.webvpn.zju.edu.cn:8001/board/68/topic?from=0&size=20&sf_request_type=fetch'
-res = requests.post(url=Url, headers=header)
-# ret = requests.post(Url, headers=header)
-print(res)
-# resp = requests.get(Url, headers=headers)
-# html = resp.text
-# print(html)
+
+def get_new_tmp():
+    with open(tmp_path, 'r') as f:
+        tmp = f.read()
+    num_tmp = int(tmp)
+    with open(tmp_path, 'w') as f:
+        f.write(str(num_tmp+1))
+    return num_tmp+1
+
+
+def work(i, sheet):
+    Url = web_name+r'/Topic/{}?sf_request_type=fetch'.format(i)
+    resp = requests.get(Url, headers=headers)
+    resp.encoding = 'utf-8'
+    html = resp.text
+    # print(html)
+
+    if html == "topic_not_exists":
+        print(str(i) + ":not exist")
+        return
+    elif html == "topic_is_deleted":
+        print(str(i) + ":deleted")
+        return
+    try:
+
+        js_html = json.loads(html)
+        cnt = int(js_html["replyCount"] / 10)
+
+        tmp = []
+        for j in range(0, cnt + 1):
+            url = web_name+r'/Topic/{}/post?from={}&size=10&sf_request_type=fetch'.format(
+                i, j * 10)
+            res = requests.get(url, headers=headers)
+            res.encoding = 'utf-8'
+            htmls = res.text
+            js_htmls = json.loads(htmls)
+            # print(js_htmls)
+            for k in range(0, 10):
+                try:
+                    tmp.append([str(js_htmls[k]["floor"]), js_htmls[k]["content"],'赞', str(js_htmls[k]["likeCount"]), '踩', str(js_htmls[k]["dislikeCount"]), '发布时间', str(js_htmls[k]["time"])])
+                except IndexError:
+                    continue
+
+        print(str(i) + ":saved")
+        sheet.append(['topic', str(i), js_html["title"]])
+        row = sheet[sheet.max_row]
+        for r in row:
+            r.font = openpyxl.styles.Font(name="微软雅黑", size=12, bold=True, italic=False)
+        sheet.append(['观看', str(js_html["hitCount"]), '收藏', str(js_html["favoriteCount"]), '发布时间', js_html["time"]])
+        row = sheet[sheet.max_row]
+        for r in row:
+            r.font = openpyxl.styles.Font(name="微软雅黑", size=10, bold=False, italic=True)
+
+        for T in tmp:
+            try:
+                sheet.append(T)
+            except openpyxl.utils.exceptions.IllegalCharacterError:
+                print("IllegalCharacter:" + str(T[0]))
+                continue
+
+    except json.decoder.JSONDecodeError:
+        print(str(i) + ":Authorization Error")
+        return
+
+
+def spider(workbook_num):
+    t0 = time.time()
+    t1 = time.time()
+    workbook = openpyxl.Workbook()
+    sheet = workbook.active
+    sheet.title = 'cc98'
+    board_num = 68
+    web_url = web_name+r'/board/{}?sf_request_type=fetch'.format(board_num)
+    resp = requests.get(web_url, headers=headers)
+    resp.encoding = 'utf-8'
+    html = resp.text
+    js_html = json.loads(html)
+
+    num = int(js_html["topicCount"] / 20)
+    with open(num_path, 'r') as f:
+        now = f.read()
+    now_num = int(now)
+    for n in range(now_num + 1, num + 1):
+        web_Url = web_name+r'/board/{}/topic?from={}&size=20&sf_request_type=fetch'.format(board_num, n * 20)
+        resp = requests.get(web_Url, headers=headers)
+        resp.encoding = 'utf-8'
+        html = resp.text
+        js_html = json.loads(html)
+        try:
+            for k in range(0, 20):
+                try:
+                    work(js_html[k]["id"], sheet)
+                except IndexError:
+                    continue
+        except json.decoder.JSONDecodeError:
+            print("topic list Authorization error")
+            continue
+        if n % 5 == 0:  # 每100个帖子保存一下
+            workbook.save(workbook_name.format(workbook_num))
+            get_time(t0, t1, time.time())
+            t1 = time.time()
+            print(n)
+            with open(num_path, 'w') as f:
+                f.write(str(n))
+        if n % 500 == 0:  # 每个n有20个帖子
+            # workbook = openpyxl.Workbook()
+            workbook.remove(sheet)
+            workbook.create_sheet('cc98')
+            sheet = workbook['cc98']
+            workbook_num = get_new_tmp()
+
+    workbook.save(workbook_name.format(workbook_num))
+
+
+if __name__ == "__main__":
+    if not os.path.exists(num_path):
+        with open(num_path, 'w') as f:
+            f.write(str(0))
+    if not os.path.exists(tmp_path):
+        with open(tmp_path, 'w') as f:
+            f.write(str(0))
+    with open(tmp_path, 'r') as f:
+        workbook_num = f.read()
+    spider(workbook_num)
