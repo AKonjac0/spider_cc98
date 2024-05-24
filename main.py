@@ -8,7 +8,7 @@ import os
 
 headers = {
     'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/119.0.0.0 Safari/537.36 Edg/119.0.0.0',
-    'Authorization':'Bearer eyJhbGciOiJSUzI1NiIsImtpZCI6IkEyOTQ4RUY3Nzk3RkZFNkQ0OTcyOTQ0ODY5OTU3MkU5IiwidHlwIjoiYXQrand0In0.eyJuYmYiOjE3MTYyMDg0MzksImV4cCI6MTcxNjIxMjAzOSwiaXNzIjoiaHR0cHM6Ly9vcGVuaWQuY2M5OC5vcmciLCJjbGllbnRfaWQiOiI5YTFmZDIwMC04Njg3LTQ0YjEtNGMyMC0wOGQ1MGE5NmU1Y2QiLCJzdWIiOiI3MzUzNzYiLCJhdXRoX3RpbWUiOjE3MTU1MDQzNzMsImlkcCI6ImxvY2FsIiwidW5pcXVlX25hbWUiOiJBS29uamFjXyIsIm5hbWUiOiJBS29uamFjXyIsImZvcnVtLnByaXZpbGVnZSI6NCwianRpIjoiOEQyNEE4NDQzQkVFMzJGNzVEMTg5RDlGQTZFREMyQzYiLCJpYXQiOjE3MTU1MDQzNzMsInNjb3BlIjpbImNjOTgtYXBpIiwib3BlbmlkIiwib2ZmbGluZV9hY2Nlc3MiXSwiYW1yIjpbIkNDOTgiXX0.42wBYBrCQp622JtBPSO46fFukupETH-Z_NqRczUP6s0xfkcbXfzYkyLN8ojkpPM8DAVn22kQ1HgVPIlKPS_lFaazjML-zf2za2l3rZ3p3HQOj-Yataj-TCJjOo-kQkILV2aMFjx78-vQBrTWT0vcMaSMmhOFBf9a9nDtkEDQIkjL2xfzvkdCcwNdL2eLSNJD0RFKFXpcZjy2Ue9J-NcDD8boSzaa7bz_tq3yycHPmuImE_g6LJCh3JBJcarFiV_mqGuX5Wds82GtelZoSUwWqsp76Fcw7FbU4ohImbhg9nKpSHOvlk1dBGNrWB9GFB_wWwLwDdhq3b9dmm_PTpQJFQ'
+    'Authorization':'Bearer eyJhbGciOiJSUzI1NiIsImtpZCI6IkEyOTQ4RUY3Nzk3RkZFNkQ0OTcyOTQ0ODY5OTU3MkU5IiwidHlwIjoiYXQrand0In0.eyJuYmYiOjE3MTU1MDIzNTYsImV4cCI6MTcxNTUwNTk1NiwiaXNzIjoiaHR0cHM6Ly9vcGVuaWQuY2M5OC5vcmciLCJjbGllbnRfaWQiOiI5YTFmZDIwMC04Njg3LTQ0YjEtNGMyMC0wOGQ1MGE5NmU1Y2QiLCJzdWIiOiI3MzUzNzYiLCJhdXRoX3RpbWUiOjE3MTM1ODk4MzEsImlkcCI6ImxvY2FsIiwidW5pcXVlX25hbWUiOiJBS29uamFjXyIsIm5hbWUiOiJBS29uamFjXyIsImZvcnVtLnByaXZpbGVnZSI6NCwianRpIjoiMDFDODM4QzdDNzFGMTkzMTU3OEY1MzRFNjBBNEI3NzEiLCJpYXQiOjE3MTM1ODk4MzEsInNjb3BlIjpbImNjOTgtYXBpIiwib3BlbmlkIiwib2ZmbGluZV9hY2Nlc3MiXSwiYW1yIjpbIkNDOTgiXX0.E7TcnkC-FG2NWO1dULuQRhZyuSsk0EGTM8Q4uCbNE4KM0fggNXtmcN1HB0a_Kjfdr4i8yYofNuZUzWOKNQiagFNB253i1ixOdCDZdyCb6lWnocbotczwbZMyORt_YLox0K7wUD4AR67Y_U7rwQfP0Ceu7lPGHJM-jNbZL2yyxdE7m7y9wSPC5WMVP-7pCPTSOqUo9RXGONQNC9nS735BfBoEYefpoLV0YbfxFGA-EYbnAW_azbZcRYa3vKdi1ZIBWk4yQTwNzhKYkVsZeIGh7vCAXpGEyEhkpZWy78tZ3qnft9ZlVCWt0KBl3bp1r3mY6BtJxIGDHrm3LboEUKNDgw'
 }
 tmp_path = './tmp.txt'  # workbook_num
 num_path = './num.txt'  # topic_num
@@ -44,6 +44,7 @@ def work(i, sheet):
     resp = requests.get(Url, headers=headers)
     resp.encoding = 'utf-8'
     html = resp.text
+    # print(html)
 
     if html == "topic_not_exists":
         print(str(i) + ":not exist")
@@ -64,6 +65,7 @@ def work(i, sheet):
             res.encoding = 'utf-8'
             htmls = res.text
             js_htmls = json.loads(htmls)
+            # print(js_htmls)
             for k in range(0, 10):
                 try:
                     tmp.append([str(js_htmls[k]["floor"]), js_htmls[k]["content"],'赞', str(js_htmls[k]["likeCount"]), '踩', str(js_htmls[k]["dislikeCount"]), '发布时间', str(js_htmls[k]["time"])])
@@ -98,12 +100,13 @@ def spider(workbook_num):
     workbook = openpyxl.Workbook()
     sheet = workbook.active
     sheet.title = 'cc98'
-    board_num = 100
+    board_num = 68
     web_url = web_name+r'/board/{}?sf_request_type=fetch'.format(board_num)
     resp = requests.get(web_url, headers=headers)
     resp.encoding = 'utf-8'
     html = resp.text
     js_html = json.loads(html)
+
     num = int(js_html["topicCount"] / 20)
     with open(num_path, 'r') as f:
         now = f.read()
@@ -113,7 +116,6 @@ def spider(workbook_num):
         resp = requests.get(web_Url, headers=headers)
         resp.encoding = 'utf-8'
         html = resp.text
-
         js_html = json.loads(html)
         try:
             for k in range(0, 20):
