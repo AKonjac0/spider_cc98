@@ -15,6 +15,8 @@
   
    ![image](https://github.com/AKonjac0/spider_cc98/assets/110406952/7a7b5804-2869-4aeb-8c86-c12bad749dac)
 
+这个东西是动态刷新的，~~具体刷新频率不知道~~。
+
 ~~一般而言不会出现这个问题，如果出现了就得改一下~~
 
 ~~或许以后会写一个自动获取Authorization的代码传上来~~
